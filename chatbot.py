@@ -2,6 +2,7 @@ import json
 
 from fbchat import Client, log
 from fbchat.models import *
+from conversation import get_message
 
 EMAIL = ""
 PASSWORD = ""
@@ -16,8 +17,14 @@ class Bot(Client):
 
         # If you're not the author, echo the message back
         if author_id != self.uid and thread_type == ThreadType.USER:
-            print("sending message...")
-            self.send(message_object, thread_id=thread_id, thread_type=ThreadType.USER)
+
+            user = client.fetchUserInfo(author_id)[author_id]
+            print("user: " + user.name)
+            msg = get_message(message_object.text, author_id, user.name)
+
+            if msg != None:
+                print("sending message...")
+                self.send(Message(text=msg), thread_id=thread_id, thread_type=ThreadType.USER)
 
 
 def login():
